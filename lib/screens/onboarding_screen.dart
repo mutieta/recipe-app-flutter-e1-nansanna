@@ -14,42 +14,38 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   // 1. CHECK YOUR IMAGE PATHS HERE
   // Ensure these match exactly where you put the files in your project folder
-  final List<Map<String, String>> _onboardingData = [
-    {
-      "title": "Find Your Next Favorite Meal",
-      "body": "Thousands of recipes in your pocket. Ready to get cooking?",
-      "image": "assets/images/onboarding1.png",
-    },
-    {
-      "title": "Cook With What You Have",
-      "body": "Select ingredients you have at home and we'll find the perfect recipe.",
-      "image": "assets/images/onboarding2.png",
-    },
-    {
-      "title": "Personalized For You",
-      "body": "Select your diet preferences and never see a recipe you can't eat.",
-      "image": "assets/images/onboarding3.png",
-    },
+  // Only images needed for onboarding pages
+  final List<String> _onboardingImages = [
+    'assets/images/onboarding1.png',
+    'assets/images/onboarding2.png',
+    'assets/images/onboarding3.png',
   ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       body: SafeArea(
         child: Column(
           children: [
-
             // 2. TOP SECTION: SKIP BUTTON (Top Right)
             Padding(
               padding: const EdgeInsets.only(top: 16.0, right: 16.0),
               child: Align(
                 alignment: Alignment.topRight,
-                child: _currentPage == _onboardingData.length - 1
-                    ? const SizedBox(height: 48) // Hide Skip on last page, keep space
+                child: _currentPage == _onboardingImages.length - 1
+                    ? const SizedBox(
+                        height: 48,
+                      ) // Hide Skip on last page, keep space
                     : TextButton(
-                  onPressed: _finishOnboarding,
-                  child: const Text("Skip", style: TextStyle(fontSize: 16)),
-                ),
+                        onPressed: _finishOnboarding,
+                        child: const Text(
+                          "Skip",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey,
+                          )
+                        ),
+                      ),
               ),
             ),
 
@@ -62,12 +58,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     _currentPage = value;
                   });
                 },
-                itemCount: _onboardingData.length,
-                itemBuilder: (context, index) => _buildPage(
-                  title: _onboardingData[index]['title']!,
-                  body: _onboardingData[index]['body']!,
-                  imagePath: _onboardingData[index]['image']!,
-                ),
+                itemCount: _onboardingImages.length,
+                itemBuilder: (context, index) =>
+                    _buildPage(imagePath: _onboardingImages[index]),
               ),
             ),
 
@@ -79,14 +72,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 children: [
                   // Dots Indicator (Left Side)
                   Row(
-                    children: List.generate(_onboardingData.length, (index) {
+                    children: List.generate(_onboardingImages.length, (index) {
                       return AnimatedContainer(
                         duration: const Duration(milliseconds: 200),
                         margin: const EdgeInsets.symmetric(horizontal: 4),
                         height: 8,
                         width: _currentPage == index ? 24 : 8,
                         decoration: BoxDecoration(
-                          color: _currentPage == index ? Colors.blue : Colors.grey[300],
+                          color: _currentPage == index
+                              ? Colors.yellow
+                              : Colors.grey[300],
                           borderRadius: BorderRadius.circular(12),
                         ),
                       );
@@ -96,7 +91,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   // Next / Start Button (Right Side)
                   ElevatedButton(
                     onPressed: () {
-                      if (_currentPage == _onboardingData.length - 1) {
+                      if (_currentPage == _onboardingImages.length - 1) {
                         _finishOnboarding();
                       } else {
                         _pageController.nextPage(
@@ -106,10 +101,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      foregroundColor: Colors.white,
+                      backgroundColor: Colors.yellow,
+                      foregroundColor: Colors.black,
                     ),
-                    child: Text(_currentPage == _onboardingData.length - 1 ? "Start" : "Next"),
+                    child: Text(
+                      _currentPage == _onboardingImages.length - 1
+                          ? "Start"
+                          : "Next",
+                    ),
                   ),
                 ],
               ),
@@ -120,49 +119,29 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  // Page Builder Helper
-  Widget _buildPage({required String title, required String body, required String imagePath}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // Image Area
-          Expanded(
-            flex: 3,
-            child: Image.asset(
-              imagePath,
-              fit: BoxFit.contain,
-              // Add error builder to see if image is failing to load
-              errorBuilder: (context, error, stackTrace) {
-                return const Center(
-                  child: Text("Image not found.\nCheck path!", textAlign: TextAlign.center, style: TextStyle(color: Colors.red)),
-                );
-              },
-            ),
-          ),
-          const SizedBox(height: 20),
-          // Text Area
-          Expanded(
-            flex: 2,
-            child: Column(
-              children: [
-                Text(
-                  title,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  body,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 16, color: Colors.grey),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+  // Page Builder Helper (images only)
+  Widget _buildPage({required String imagePath}) {
+    // Use a Stack so the image can be full-bleed (background) and we can
+    // still show an error message if the asset fails to load.
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        // Background image (full cover)
+        Image.asset(
+          imagePath,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            // Log the error to console so user can see the reason in terminal
+            debugPrint('Failed to load asset: $imagePath -> $error');
+            return const Center(
+              child: Icon(Icons.broken_image, size: 64, color: Colors.white),
+            );
+          },
+        ),
+
+        // Slight overlay for better contrast (optional)
+        Container(color: const Color.fromRGBO(0, 0, 0, 0.12)),
+      ],
     );
   }
 
