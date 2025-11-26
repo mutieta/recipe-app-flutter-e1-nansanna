@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:lab3/main.dart';
+import 'package:flutter/services.dart';
+import 'package:lab3/screens/homescreen.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -20,6 +21,29 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     'assets/images/onboarding2.png',
     'assets/images/onboarding3.png',
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    // Diagnostic: print the AssetManifest at startup so we can see which assets
+    // were bundled into the app. This helps verify whether the images were
+    // included and what their keys are.
+    rootBundle
+        .loadString('AssetManifest.json')
+        .then((manifest) {
+          debugPrint('--- AssetManifest.json ---');
+          // Print only entries related to onboarding to avoid noisy output
+          final lines = manifest.split('\n');
+          for (final line in lines) {
+            if (line.contains('onboarding')) debugPrint(line);
+          }
+          debugPrint('--- end manifest ---');
+        })
+        .catchError((e) {
+          debugPrint('Could not read AssetManifest.json: $e');
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,10 +64,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         onPressed: _finishOnboarding,
                         child: const Text(
                           "Skip",
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey,
-                          )
+                          style: TextStyle(fontSize: 16, color: Colors.grey),
                         ),
                       ),
               ),
@@ -146,8 +167,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   void _finishOnboarding() {
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const MyHomePage(title: 'Recipe App')),
-    );
+    Navigator.of(
+      context,
+    ).pushReplacement(MaterialPageRoute(builder: (_) => const HomeScreen()));
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 // 1. Import your onboarding screen file
-import 'package:lab3/screens/onboarding_screen.dart'; // Make sure 'lab3' is your project name
+import 'package:lab3/screens/onboarding_screen.dart'; // Make sure'lab3' is your project name
 
 void main() {
   runApp(const MyApp());
@@ -94,9 +94,7 @@ class _MyHomePageState extends State<MyHomePage> {
           // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
+            const Text('You have pushed the button this many times:'),
             Text(
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
