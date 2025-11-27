@@ -12,10 +12,11 @@ class CategoryList extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20),
         children: [
           _cat(Icons.ramen_dining),
+          _cat(Icons.local_pizza),
           _cat(Icons.fastfood),
           _cat(Icons.local_drink),
           _cat(Icons.cake),
-          _cat(Icons.local_pizza),
+          _cat(Icons.icecream),
         ],
       ),
     );
@@ -23,15 +24,21 @@ class CategoryList extends StatelessWidget {
 
   Widget _cat(IconData icon) {
     return Padding(
-      padding: const EdgeInsets.only(right: 12),
+      padding: const EdgeInsets.only(right: 12), // space BETWEEN items
       child: Container(
-        width: 55,
         height: 55,
+        padding: const EdgeInsets.symmetric(
+          horizontal: 12, // <— equal left + right padding inside the box
+        ),
         decoration: BoxDecoration(
-          color: const Color(0xffd6d6c2),
+          color: Colors.black,
           borderRadius: BorderRadius.circular(14),
         ),
-        child: Icon(icon, size: 28, color: Colors.black87),
+        child: Icon(
+          icon,
+          size: 28,
+          color: Colors.orange[300],
+        ),
       ),
     );
   }

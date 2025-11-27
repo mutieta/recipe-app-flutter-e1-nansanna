@@ -6,6 +6,7 @@ import '../widgets/home_header.dart';
 import '../widgets/popular_recipes.dart';
 import '../widgets/category_list.dart';
 import '../widgets/live_recipe.dart';
+import '../widgets/cuisine_country.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -42,11 +43,13 @@ class _HomeScreenState extends State<HomeScreen> {
             SizedBox(height: 20),
             HomeHeader(),
             SizedBox(height: 20),
-            PopularRecipes(),
+            LiveRecipeCard(),
             SizedBox(height: 20),
             CategoryList(),
             SizedBox(height: 20),
-            LiveRecipeCard(),
+            CuisineCountry(),
+            SizedBox(height: 20),
+            PopularRecipes(),
             SizedBox(height: 40),
           ],
         ),

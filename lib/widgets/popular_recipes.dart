@@ -10,21 +10,35 @@ class PopularRecipes extends StatelessWidget {
       children: [
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 20),
-          child: Text("Populer Recipes",
-              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
+          child: Text(
+            "Popular Recipes",
+            style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+          ),
         ),
         const SizedBox(height: 12),
-        SizedBox(
-          height: 180,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.only(left: 20),
-            children: [
-              _recipeCard("Chiken Pasta Recipe", "4.8 review",
-                  "https://picsum.photos/200"),
-              _recipeCard("Naga Burger Recipe", "4.8 review",
-                  "https://picsum.photos/201"),
-            ],
+
+        // 🟩 Replace ListView with GridView
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: SizedBox(
+            height: 400, // adjust height freely
+            child: GridView.builder(
+              itemCount: 6,          // number of cards
+              gridDelegate:
+                  const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,   // 🟢 TWO CARDS PER ROW
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                childAspectRatio: 0.8,
+              ),
+              itemBuilder: (context, index) {
+                return _recipeCard(
+                  "Recipe ${(index + 1)}",
+                  "4.8 review",
+                  "https://picsum.photos/20${index + 1}",
+                );
+              },
+            ),
           ),
         ),
       ],
@@ -32,32 +46,39 @@ class PopularRecipes extends StatelessWidget {
   }
 
   Widget _recipeCard(String title, String rate, String img) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 12),
-      child: Container(
-        width: 150,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          image: DecorationImage(
-              image: NetworkImage(img), fit: BoxFit.cover),
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        image: DecorationImage(
+          image: NetworkImage(img),
+          fit: BoxFit.cover,
         ),
-        child: Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            color: Colors.black.withOpacity(0.3),
+      ),
+      child: Stack(
+        children: [
+          // dark overlay for text visibility
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              color: Colors.black.withOpacity(0.3),
+            ),
           ),
-          child: Align(
-            alignment: Alignment.bottomLeft,
+
+
+          // Title (bottom left)
+          Positioned(
+            left: 8,
+            bottom: 8,
             child: Text(
               title,
               style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14),
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }

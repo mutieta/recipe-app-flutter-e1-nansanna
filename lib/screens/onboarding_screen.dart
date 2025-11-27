@@ -101,7 +101,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         width: _currentPage == index ? 24 : 8,
                         decoration: BoxDecoration(
                           color: _currentPage == index
-                              ? Colors.yellow
+                              ? Colors.yellow[800]
                               : Colors.grey[300],
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -122,7 +122,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.yellow,
+                      backgroundColor: Colors.yellow[800],
                       foregroundColor: Colors.black,
                     ),
                     child: Text(
