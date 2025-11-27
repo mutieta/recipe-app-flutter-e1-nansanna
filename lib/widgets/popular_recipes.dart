@@ -11,7 +11,7 @@ class PopularRecipes extends StatelessWidget {
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 20),
           child: Text("Populer Recipes",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
         ),
         const SizedBox(height: 12),
         SizedBox(
