@@ -13,48 +13,35 @@ class Meal {
     required this.ingredients,
   });
 
-  // Convert JSON → Meal
   factory Meal.fromJson(Map<String, dynamic> json) {
     return Meal(
-      id: json["idMeal"] ?? "",
-      title: json["strMeal"] ?? "",
-      imageUrl: json["strMealThumb"] ?? "",
-      instructions: json["strInstructions"] ?? "",
-      ingredients: _extractIngredients(json),
+      id: json['id'].toString(),
+      title: json['title'] ?? '',
+      imageUrl: json['imageUrl'] ?? '',
+      instructions: json['instructions'] ?? '',
+      ingredients: List<String>.from(json['ingredients'] ?? []),
     );
   }
 
-  // Convert Meal → Map (for database)
+  // For SQFLite
   Map<String, dynamic> toMap() {
     return {
-      "id": id,
-      "title": title,
-      "imageUrl": imageUrl,
-      "instructions": instructions,
-      "ingredients": ingredients.join("||"), // store as string
+      'id': id,
+      'title': title,
+      'imageUrl': imageUrl,
+      'instructions': instructions,
+      // Store list as a single string
+      'ingredients': ingredients.join(','),
     };
   }
 
-  // SQLite maps back → Meal
   factory Meal.fromMap(Map<String, dynamic> map) {
     return Meal(
-      id: map["id"],
-      title: map["title"],
-      imageUrl: map["imageUrl"],
-      instructions: map["instructions"],
-      ingredients: map["ingredients"].toString().split("||"),
+      id: map['id'],
+      title: map['title'],
+      imageUrl: map['imageUrl'],
+      instructions: map['instructions'],
+      ingredients: map['ingredients'].toString().split(','),
     );
-  }
-
-  // Extract ingredients from API (MealDB format)
-  static List<String> _extractIngredients(Map<String, dynamic> json) {
-    List<String> list = [];
-    for (int i = 1; i <= 20; i++) {
-      final ingredient = json["strIngredient$i"];
-      if (ingredient != null && ingredient.toString().isNotEmpty) {
-        list.add(ingredient.toString());
-      }
-    }
-    return list;
   }
 }
