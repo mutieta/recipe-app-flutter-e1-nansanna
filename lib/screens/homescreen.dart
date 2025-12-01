@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../providers/navigation_provider.dart';
 import '../widgets/bottom_nav_bar.dart';
 import 'explore_screen.dart';
 import 'favourite_screen.dart';
@@ -8,29 +10,20 @@ import '../widgets/category_list.dart';
 import '../widgets/live_recipe.dart';
 import '../widgets/cuisine_country.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentIndex = ref.watch(navigationIndexProvider);
 
-class _HomeScreenState extends State<HomeScreen> {
-  int _index = 0;
+    final pages = [_homeTab(), const ExploreScreen(), const FavouriteScreen()];
 
-  late final List<Widget> pages = [
-    _homeTab(),
-    const ExploreScreen(),
-    const FavouriteScreen(),
-  ];
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(index: _index, children: pages),
+      body: IndexedStack(index: currentIndex, children: pages),
       bottomNavigationBar: BottomNavBar(
-        currentIndex: _index,
-        onTap: (i) => setState(() => _index = i),
+        currentIndex: currentIndex,
+        onTap: (i) => ref.read(navigationIndexProvider.notifier).state = i,
       ),
     );
   }

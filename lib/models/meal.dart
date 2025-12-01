@@ -18,12 +18,13 @@ class Meal {
   // Convert JSON → Meal
   factory Meal.fromJson(Map<String, dynamic> json) {
     return Meal(
-      id: json["idMeal"] ?? "",
-      title: json["strMeal"] ?? "",
-      imageUrl: json["strMealThumb"] ?? "",
-      instructions: json["strInstructions"] ?? "",
+      id: json["idMeal"] ?? json["id"]?.toString() ?? "",
+      title: json["strMeal"] ?? json["meal"] ?? json["name"] ?? "",
+      imageUrl:
+          json["strMealThumb"] ?? json["mealThumb"] ?? json["imageUrl"] ?? "",
+      instructions: json["strInstructions"] ?? json["instructions"] ?? "",
       ingredients: _extractIngredients(json),
-      linkVideoUrl: json["strYoutube"], // MealDB returns YouTube video link
+      linkVideoUrl: json["strYoutube"] ?? json["youtube"], // accept both keys
     );
   }
 
@@ -53,13 +54,36 @@ class Meal {
 
   // Extract ingredients from API (MealDB format)
   static List<String> _extractIngredients(Map<String, dynamic> json) {
-    List<String> list = [];
+    // Handle two formats:
+    // 1) MealDB style: keys strIngredient1..strIngredient20
+    // 2) Our custom API: 'ingredients' is a List of { ingredient:, measure: }
+    final List<String> list = [];
+
+    if (json["ingredients"] is List) {
+      try {
+        for (final item in json["ingredients"] as List) {
+          if (item is Map) {
+            final ing = (item["ingredient"] ?? item["name"] ?? "").toString();
+            final meas = (item["measure"] ?? item["qty"] ?? "").toString();
+            if (ing.isNotEmpty) {
+              list.add(meas.isNotEmpty ? "$ing — $meas" : ing);
+            }
+          }
+        }
+        if (list.isNotEmpty) return list;
+      } catch (_) {}
+    }
+
     for (int i = 1; i <= 20; i++) {
       final ingredient = json["strIngredient$i"];
-      if (ingredient != null && ingredient.toString().isNotEmpty) {
-        list.add(ingredient.toString());
+      final measure = json["strMeasure$i"];
+      if (ingredient != null && ingredient.toString().trim().isNotEmpty) {
+        final ing = ingredient.toString().trim();
+        final meas = measure != null ? measure.toString().trim() : "";
+        list.add(meas.isNotEmpty ? "$ing — $meas" : ing);
       }
     }
+
     return list;
   }
 }

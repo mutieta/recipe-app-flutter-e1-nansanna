@@ -1,26 +1,15 @@
 import 'package:flutter/material.dart';
-import '../models/meal.dart';
-import '../services/api_service.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../providers/meal_provider.dart';
 import '../screens/meal_screen.dart';
 
-class PopularRecipes extends StatefulWidget {
+class PopularRecipes extends ConsumerWidget {
   const PopularRecipes({super.key});
 
   @override
-  State<PopularRecipes> createState() => _PopularRecipesState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final mealsAsync = ref.watch(mealsProvider);
 
-class _PopularRecipesState extends State<PopularRecipes> {
-  late Future<List<Meal>> mealsFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    mealsFuture = ApiService.fetchMeals();
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -36,19 +25,8 @@ class _PopularRecipesState extends State<PopularRecipes> {
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: SizedBox(
             height: 400,
-            child: FutureBuilder<List<Meal>>(
-              future: mealsFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text("Error: ${snapshot.error}"));
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(child: Text("No meals found"));
-                }
-
-                final meals = snapshot.data!;
-
+            child: mealsAsync.when(
+              data: (meals) {
                 return GridView.builder(
                   itemCount: meals.length,
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -61,17 +39,16 @@ class _PopularRecipesState extends State<PopularRecipes> {
                     final meal = meals[index];
 
                     return GestureDetector(
-                      onTap: () async {
-                        final mealDetail = await ApiService.fetchMealById(meal.id);
+                      onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => MealDetailsScreen(
-                              id: mealDetail.id,
-                              title: mealDetail.title,
-                              imageUrl: mealDetail.imageUrl,
-                              instructions: mealDetail.instructions,
-                              ingredients: mealDetail.ingredients,
+                              id: meal.id,
+                              title: meal.title,
+                              imageUrl: meal.imageUrl,
+                              instructions: meal.instructions,
+                              ingredients: meal.ingredients,
                             ),
                           ),
                         );
@@ -111,6 +88,8 @@ class _PopularRecipesState extends State<PopularRecipes> {
                   },
                 );
               },
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (err, st) => Center(child: Text("Error: $err")),
             ),
           ),
         ),
