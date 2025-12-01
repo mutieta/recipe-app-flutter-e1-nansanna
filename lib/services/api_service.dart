@@ -6,75 +6,36 @@ import '../models/category.dart';
 class ApiService {
   static const String baseUrl = "https://meal-db-sandy.vercel.app";
 
-  // 🔑 Use your own DB header
-  static const String dbHeader = "d443dd4e-ac1d-4d5e-9885-cf05682f0ab9";
+  // 🔑 Your unique student GUID
+  static const String dbHeader = "5186bf20-80a6-4beb-9544-99620186993b";
 
   static Map<String, String> get headers => {
         "X-DB-NAME": dbHeader,
         "Content-Type": "application/json",
       };
 
-  // --------------------------------------------------------
   // Fetch all meals
-  // --------------------------------------------------------
   static Future<List<Meal>> fetchMeals() async {
     final response = await http.get(
       Uri.parse("$baseUrl/meals"),
       headers: headers,
     );
 
-    try {
-      if (response.statusCode == 200) {
-        final decoded = json.decode(response.body);
-
-        List dataList;
-
-        // Case 1: API returns a pure list
-        if (decoded is List) {
-          dataList = decoded;
-        }
-
-        // Case 2: API returns a map like { meals: [...] }
-        else if (decoded is Map) {
-          if (decoded['meals'] is List) {
-            dataList = decoded['meals'];
-          } else if (decoded['data'] is List) {
-            dataList = decoded['data'];
-          } else {
-            // Try to detect any list inside map
-            final firstList = decoded.values.firstWhere(
-              (v) => v is List,
-              orElse: () => [],
-            );
-
-            if (firstList is List) {
-              dataList = firstList;
-            } else {
-              throw Exception(
-                  "Unexpected API format. Expected list but got: ${decoded.runtimeType}");
-            }
-          }
-        }
-
-        // Case 3: invalid JSON type
-        else {
-          throw Exception('Unexpected JSON payload type: ${decoded.runtimeType}');
-        }
-
-        return dataList.map((e) => Meal.fromJson(e)).toList();
+    if (response.statusCode == 200) {
+      final decoded = json.decode(response.body);
+      if (decoded is List) {
+        return decoded.map((e) => Meal.fromJson(e)).toList();
+      } else if (decoded is Map && decoded['meals'] is List) {
+        return (decoded['meals'] as List).map((e) => Meal.fromJson(e)).toList();
+      } else {
+        throw Exception("Unexpected API response: ${decoded.runtimeType}");
       }
-
-      throw Exception(
-        'Failed to load meals (status: ${response.statusCode}): ${response.body}',
-      );
-    } catch (e) {
-      throw Exception('fetchMeals error: $e');
+    } else {
+      throw Exception("Failed to fetch meals: ${response.statusCode} ${response.body}");
     }
   }
 
-  // --------------------------------------------------------
   // Fetch meal by ID
-  // --------------------------------------------------------
   static Future<Meal> fetchMealById(String id) async {
     final response = await http.get(
       Uri.parse("$baseUrl/meals/$id"),
@@ -84,13 +45,11 @@ class ApiService {
     if (response.statusCode == 200) {
       return Meal.fromJson(json.decode(response.body));
     } else {
-      throw Exception("Failed to load meal detail");
+      throw Exception("Failed to load meal detail: ${response.statusCode}");
     }
   }
 
-  // --------------------------------------------------------
   // Fetch categories
-  // --------------------------------------------------------
   static Future<List<Category>> fetchCategories() async {
     final response = await http.get(
       Uri.parse("$baseUrl/categories"),
@@ -101,7 +60,7 @@ class ApiService {
       final List data = json.decode(response.body);
       return data.map((json) => Category.fromJson(json)).toList();
     } else {
-      throw Exception("Failed to load categories");
+      throw Exception("Failed to load categories: ${response.statusCode}");
     }
   }
 }
