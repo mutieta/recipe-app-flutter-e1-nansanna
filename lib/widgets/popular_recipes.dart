@@ -27,8 +27,9 @@ class PopularRecipes extends ConsumerWidget {
             height: 400,
             child: mealsAsync.when(
               data: (meals) {
+                final displayed = meals.take(12).toList();
                 return GridView.builder(
-                  itemCount: meals.length,
+                  itemCount: displayed.length,
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     crossAxisSpacing: 12,
@@ -36,7 +37,7 @@ class PopularRecipes extends ConsumerWidget {
                     childAspectRatio: 0.8,
                   ),
                   itemBuilder: (context, index) {
-                    final meal = meals[index];
+                    final meal = displayed[index];
 
                     return GestureDetector(
                       onTap: () {

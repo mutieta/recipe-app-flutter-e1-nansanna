@@ -70,6 +70,37 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
     }
   }
 
+  // --- NEW: Smarter Parsing Logic ---
+  // This helper function handles different dash types and ensures
+  // we only split on the FIRST separator, keeping the rest as the amount.
+  Map<String, String> _parseIngredient(String line) {
+    // Defines a regex that matches:
+    // : (colon)
+    // - (hyphen)
+    // – (en dash)
+    // — (em dash)
+    // − (minus sign)
+    // and looks for them potentially surrounded by spaces.
+    final regex = RegExp(r'[:\-\u2013\u2014\u2212]');
+    
+    // Find the first match of any separator
+    final match = regex.firstMatch(line);
+
+    if (match != null) {
+      // Split the string at the index of the first separator
+      final name = line.substring(0, match.start).trim();
+      
+      // Everything after the separator is the amount
+      // (match.end skips the separator character itself)
+      final amount = line.substring(match.end).trim();
+      
+      return {'name': name, 'amount': amount};
+    }
+    
+    // Fallback: If no separator found, return whole line as name
+    return {'name': line, 'amount': ''};
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -81,7 +112,6 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
             onBack: () => Navigator.pop(context),
             onFavorite: _toggleFavorite,
           ),
-
           Expanded(
             child: SingleChildScrollView(
               child: Column(
@@ -93,9 +123,9 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                     height: 250,
                     fit: BoxFit.cover,
                   ),
-
                   const SizedBox(height: 16),
-
+                  
+                  // Title
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
@@ -108,6 +138,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                     ),
                   ),
 
+                  // Tags
                   if (widget.category != null || widget.area != null)
                     Padding(
                       padding: const EdgeInsets.symmetric(
@@ -170,73 +201,74 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                       ),
                     ),
                   ),
-
-                  const SizedBox(height: 8),
-
+                  const SizedBox(height: 12),
+                  
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.yellow.shade100,
-                        borderRadius: BorderRadius.circular(16),
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Column(
-                        children: widget.ingredients.map((line) {
-                          final parts = line.split(RegExp(r'[-–:]'));
-                          final name = parts[0].trim();
-                          final amount = parts.length > 1
-                              ? parts[1].trim()
-                              : "";
+                      color: Colors.grey.shade50, // Light background
+                      elevation: 1,
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Column(
+                          children: widget.ingredients.asMap().entries.map((entry) {
+                            final index = entry.key;
+                            final line = entry.value;
+                            
+                            // Use the new smart parser
+                            final parsed = _parseIngredient(line);
+                            final name = parsed['name']!;
+                            final amount = parsed['amount']!;
+                            
+                            final isLast = index == widget.ingredients.length - 1;
 
-                          final isLast = line == widget.ingredients.last;
-
-                          return Column(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 12,
-                                ),
-                                child: Row(
-                                  children: [
-                                    // Ingredient name on the left
-                                    Expanded(
-                                      child: Text(
-                                        name,
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w500,
+                            return Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 10),
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      // Ingredient Name (Left)
+                                      Expanded(
+                                        child: Text(
+                                          name,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyLarge
+                                              ?.copyWith(
+                                                fontWeight: FontWeight.w500,
+                                                color: Colors.grey.shade800,
+                                              ),
                                         ),
                                       ),
-                                    ),
-
-                                    // Amount on the right
-                                    const SizedBox(width: 8),
-                                    Flexible(
-                                      child: Text(
+                                      const SizedBox(width: 16),
+                                      
+                                      // Amount (Right - Orange/Yellow)
+                                      Text(
                                         amount,
-                                        textAlign: TextAlign.right,
                                         style: TextStyle(
                                           fontSize: 16,
-                                          color: Colors.orange.shade600,
                                           fontWeight: FontWeight.bold,
+                                          color: Colors.amber.shade800, 
                                         ),
-                                        overflow: TextOverflow.ellipsis,
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                              ),
-
-                              if (!isLast)
-                                Divider(
-                                  color: Colors.yellow.shade300,
-                                  height: 1,
-                                  thickness: 1,
-                                ),
-                            ],
-                          );
-                        }).toList(),
+                                if (!isLast)
+                                  Divider(
+                                    color: Colors.grey.withOpacity(0.3),
+                                    height: 1,
+                                  ),
+                              ],
+                            );
+                          }).toList(),
+                        ),
                       ),
                     ),
                   ),
@@ -244,99 +276,105 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
                   const SizedBox(height: 20),
 
                   // ----------------------------
-                  //           STEPS
+                  //           INSTRUCTIONS
                   // ----------------------------
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: const Text(
-                      "Steps",
+                      "Instructions",
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
-
-                  const SizedBox(height: 8),
-
+                  const SizedBox(height: 12),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Text(
-                      widget.instructions,
-                      style: const TextStyle(fontSize: 16),
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      color: Colors.grey.shade50,
+                      elevation: 1,
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Text(
+                          widget.instructions,
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyLarge
+                              ?.copyWith(height: 1.6),
+                        ),
+                      ),
                     ),
                   ),
 
                   const SizedBox(height: 20),
 
                   // ----------------------------
-                  //     ACTION BUTTONS
+                  //     EXTERNAL LINKS
                   // ----------------------------
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Row(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        if (widget.source != null)
-                          ElevatedButton.icon(
-                            onPressed: () async {
-                              final uri = Uri.tryParse(widget.source!);
-                              if (uri != null)
-                                await launchUrl(
-                                  uri,
-                                  mode: LaunchMode.externalApplication,
-                                );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.yellow.shade600,
-                              foregroundColor: Colors.black,
-                            ),
-                            icon: const Icon(Icons.open_in_new),
-                            label: const Text('Full recipe'),
-                          ),
-
-                        const SizedBox(width: 8),
-
-                        if (widget.linkVideoUrl != null)
-                          ElevatedButton.icon(
+                        if (widget.linkVideoUrl != null && widget.linkVideoUrl!.isNotEmpty) ...[
+                          ElevatedButton(
                             onPressed: () async {
                               final uri = Uri.tryParse(widget.linkVideoUrl!);
-                              if (uri != null)
-                                await launchUrl(
-                                  uri,
-                                  mode: LaunchMode.externalApplication,
-                                );
+                              if (uri != null) {
+                                await launchUrl(uri, mode: LaunchMode.externalApplication);
+                              }
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.yellow.shade600,
-                              foregroundColor: Colors.black,
+                              backgroundColor: Colors.red,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 14),
                             ),
-                            icon: const Icon(Icons.play_circle_outline),
-                            label: const Text('Watch'),
+                            child: const Text('Watch on YouTube'),
                           ),
+                          const SizedBox(height: 8),
+                        ],
 
-                        const SizedBox(width: 8),
+                        if (widget.source != null && widget.source!.isNotEmpty) ...[
+                          OutlinedButton(
+                            onPressed: () async {
+                              final uri = Uri.tryParse(widget.source!);
+                              if (uri != null) {
+                                await launchUrl(uri, mode: LaunchMode.externalApplication);
+                              }
+                            },
+                            style: OutlinedButton.styleFrom(
+                              side: const BorderSide(color: Colors.black),
+                              foregroundColor: Colors.black,
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                            ),
+                            child: const Text('View Full Recipe'),
+                          ),
+                          const SizedBox(height: 8),
+                        ],
 
-                        if (widget.tiktokUrl != null)
-                          ElevatedButton.icon(
+                        if (widget.tiktokUrl != null && widget.tiktokUrl!.isNotEmpty) ...[
+                          ElevatedButton(
                             onPressed: () async {
                               final uri = Uri.tryParse(widget.tiktokUrl!);
-                              if (uri != null)
-                                await launchUrl(
-                                  uri,
-                                  mode: LaunchMode.externalApplication,
-                                );
+                              if (uri != null) {
+                                await launchUrl(uri, mode: LaunchMode.externalApplication);
+                              }
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.black,
                               foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 14),
                             ),
-                            icon: const Icon(Icons.video_collection),
-                            label: const Text('TikTok'),
+                            child: const Text('TikTok'),
                           ),
+                        ],
                       ],
                     ),
                   ),
-
                   const SizedBox(height: 30),
                 ],
               ),
