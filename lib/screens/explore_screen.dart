@@ -22,10 +22,7 @@ class ExploreScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text(
           'Explore Recipes',
-          style: TextStyle(
-            fontSize: 25,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         backgroundColor: Colors.white,
@@ -37,7 +34,6 @@ class ExploreScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
             // Search Bar
             Padding(
               padding: const EdgeInsets.all(16),
@@ -74,36 +70,38 @@ class ExploreScreen extends ConsumerWidget {
 
             // Categories Chips
             categoriesAsync.when(
-              data: (categories) => 
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: Row(
-                    children: categories.map((category) {
-                      final isSelected = selectedCategory == category.name;
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: ChoiceChip(
-                          label: Text(
-                            category.name,
-                            style: TextStyle(
-                              color: isSelected ? Colors.black : Colors.black87,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          selected: isSelected,
-                          selectedColor: Colors.yellow.shade600,
-                          backgroundColor: Colors.grey.shade100,
-                          side: BorderSide(color: Colors.yellow.shade700),
-                          onSelected: (_) {
-                            ref.read(selectedCategoryProvider.notifier).state =
-                                isSelected ? null : category.name;
-                          },
-                        ),
-                      );
-                    }).toList(),
-                  ),
+              data: (categories) => SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
                 ),
+                child: Row(
+                  children: categories.map((category) {
+                    final isSelected = selectedCategory == category.name;
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: ChoiceChip(
+                        label: Text(
+                          category.name,
+                          style: TextStyle(
+                            color: isSelected ? Colors.black : Colors.black87,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        selected: isSelected,
+                        selectedColor: Colors.yellow.shade600,
+                        backgroundColor: Colors.grey.shade100,
+                        side: BorderSide(color: Colors.yellow.shade700),
+                        onSelected: (_) {
+                          ref.read(selectedCategoryProvider.notifier).state =
+                              isSelected ? null : category.name;
+                        },
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
 
               loading: () => const Padding(
                 padding: EdgeInsets.all(16),
@@ -124,10 +122,7 @@ class ExploreScreen extends ConsumerWidget {
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: Text(
                 'Cuisine',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                ),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
               ),
             ),
 
@@ -171,23 +166,23 @@ class ExploreScreen extends ConsumerWidget {
                   // Filters
                   if (searchQuery.isNotEmpty) {
                     final q = searchQuery.toLowerCase();
-                    filtered = filtered.where(
-                      (m) => m.title.toLowerCase().contains(q),
-                    ).toList();
+                    filtered = filtered
+                        .where((m) => m.title.toLowerCase().contains(q))
+                        .toList();
                   }
 
                   if (selectedCategory != null) {
                     final q = selectedCategory.toLowerCase();
-                    filtered = filtered.where(
-                      (m) => m.title.toLowerCase().contains(q),
-                    ).toList();
+                    filtered = filtered
+                        .where((m) => m.title.toLowerCase().contains(q))
+                        .toList();
                   }
 
                   if (selectedCuisine != null) {
                     final q = selectedCuisine.toLowerCase();
-                    filtered = filtered.where(
-                      (m) => m.title.toLowerCase().contains(q),
-                    ).toList();
+                    filtered = filtered
+                        .where((m) => m.title.toLowerCase().contains(q))
+                        .toList();
                   }
 
                   if (filtered.isEmpty) {
@@ -200,7 +195,10 @@ class ExploreScreen extends ConsumerWidget {
                   }
 
                   return ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                     itemCount: filtered.length,
                     itemBuilder: (context, index) {
                       final meal = filtered[index];
@@ -243,6 +241,10 @@ class ExploreScreen extends ConsumerWidget {
                                   imageUrl: meal.imageUrl,
                                   instructions: meal.instructions,
                                   ingredients: meal.ingredients,
+                                  source: meal.source,
+                                  area: meal.area,
+                                  category: meal.category,
+                                  tiktokUrl: meal.tiktokUrl,
                                 ),
                               ),
                             );

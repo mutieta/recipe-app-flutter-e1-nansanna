@@ -29,7 +29,7 @@ class RecipeHeader extends StatelessWidget {
           // Back button
           GestureDetector(
             onTap: onBack,
-            child: const Icon(Icons.arrow_back, size: 28),
+            child: const Icon(Icons.arrow_back, size: 28, color: Colors.black),
           ),
 
           // Recipe title
@@ -37,10 +37,7 @@ class RecipeHeader extends StatelessWidget {
             child: Text(
               title,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ),
 
@@ -50,7 +47,8 @@ class RecipeHeader extends StatelessWidget {
             child: Icon(
               isFavorite ? Icons.favorite : Icons.favorite_border,
               size: 28,
-              color: Colors.red,
+              // Gray when not favorited, pink shade600 when favorited
+              color: isFavorite ? Colors.pink.shade600 : Colors.grey,
             ),
           ),
         ],

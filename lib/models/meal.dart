@@ -4,7 +4,11 @@ class Meal {
   final String imageUrl;
   final String instructions;
   final List<String> ingredients;
-  final String? linkVideoUrl; // Add this field
+  final String? linkVideoUrl; // youtube or other video link
+  final String? source; // original recipe url
+  final String? area; // cuisine/area
+  final String? category; // category
+  final String? tiktokUrl; // optional tiktok link if provided
 
   Meal({
     required this.id,
@@ -12,7 +16,11 @@ class Meal {
     required this.imageUrl,
     required this.instructions,
     required this.ingredients,
-    this.linkVideoUrl, // optional, since not all meals may have it
+    this.linkVideoUrl,
+    this.source,
+    this.area,
+    this.category,
+    this.tiktokUrl,
   });
 
   // Convert JSON → Meal
@@ -25,6 +33,10 @@ class Meal {
       instructions: json["strInstructions"] ?? json["instructions"] ?? "",
       ingredients: _extractIngredients(json),
       linkVideoUrl: json["strYoutube"] ?? json["youtube"], // accept both keys
+      source: json["source"] ?? json["strSource"],
+      area: json["area"] ?? json["strArea"],
+      category: json["category"] ?? json["strCategory"],
+      tiktokUrl: json["tiktok"] ?? json["tiktokUrl"] ?? json["tikTok"],
     );
   }
 
@@ -37,6 +49,10 @@ class Meal {
       "instructions": instructions,
       "ingredients": ingredients.join("||"), // store as string
       "linkVideoUrl": linkVideoUrl,
+      "source": source,
+      "area": area,
+      "category": category,
+      "tiktokUrl": tiktokUrl,
     };
   }
 
@@ -49,6 +65,10 @@ class Meal {
       instructions: map["instructions"],
       ingredients: map["ingredients"].toString().split("||"),
       linkVideoUrl: map["linkVideoUrl"],
+      source: map["source"],
+      area: map["area"],
+      category: map["category"],
+      tiktokUrl: map["tiktokUrl"],
     );
   }
 

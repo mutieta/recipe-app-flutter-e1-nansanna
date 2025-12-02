@@ -27,6 +27,10 @@ class LiveRecipeCard extends ConsumerWidget {
                   imageUrl: meal.imageUrl,
                   instructions: meal.instructions,
                   ingredients: meal.ingredients,
+                  source: meal.source,
+                  area: meal.area,
+                  category: meal.category,
+                  tiktokUrl: meal.tiktokUrl,
                 ),
               ),
             );
