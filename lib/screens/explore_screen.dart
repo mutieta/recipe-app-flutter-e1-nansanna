@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/category_provider.dart';
+// removed category icon helper import to revert to previous state
 import '../providers/meal_provider.dart';
 import '../providers/explore_provider.dart';
 import '../screens/meal_screen.dart';
@@ -180,9 +181,14 @@ class ExploreScreen extends ConsumerWidget {
 
                   if (selectedCuisine != null) {
                     final q = selectedCuisine.toLowerCase();
-                    filtered = filtered
-                        .where((m) => m.title.toLowerCase().contains(q))
-                        .toList();
+                    filtered = filtered.where((m) {
+                      final title = m.title.toLowerCase();
+                      final area = (m.area ?? '').toLowerCase();
+                      final category = (m.category ?? '').toLowerCase();
+                      return title.contains(q) ||
+                          area.contains(q) ||
+                          category.contains(q);
+                    }).toList();
                   }
 
                   if (filtered.isEmpty) {

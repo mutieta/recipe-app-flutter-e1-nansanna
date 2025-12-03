@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../providers/explore_provider.dart';
+import '../screens/explore_screen.dart';
 
-class CuisineCountry extends StatelessWidget {
+class CuisineCountry extends ConsumerWidget {
   const CuisineCountry({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final List<String> cuisines = [
       "Cambodia",
       "Indian",
@@ -20,10 +23,7 @@ class CuisineCountry extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 20),
           child: Text(
             "Cuisine",
-            style: TextStyle(
-              fontSize: 25,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
           ),
         ),
 
@@ -36,7 +36,8 @@ class CuisineCountry extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             itemCount: cuisines.length,
             itemBuilder: (context, index) {
-              return _chip(cuisines[index]);
+              final label = cuisines[index];
+              return _chip(context, ref, label);
             },
           ),
         ),
@@ -44,23 +45,30 @@ class CuisineCountry extends StatelessWidget {
     );
   }
 
-  Widget _chip(String label) {
-    return Container(
-      margin: const EdgeInsets.only(right: 10),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      decoration: BoxDecoration(
-        color: Colors.yellow.shade600,                 // background
-        border: Border.all(
-          color: Colors.yellow.shade700,    // orange border
-          width: 2,
+  Widget _chip(BuildContext context, WidgetRef ref, String label) {
+    return GestureDetector(
+      onTap: () {
+        // set selected cuisine and navigate to Explore screen
+        ref.read(selectedCuisineProvider.notifier).state = label;
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (ctx) => const ExploreScreen()),
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.only(right: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: Colors.yellow.shade600, // background
+          border: Border.all(
+            color: Colors.yellow.shade700, // orange border
+            width: 2,
+          ),
+          borderRadius: BorderRadius.circular(20),
         ),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Text(
-        label,
-        style: const TextStyle(
-          color: Colors.black,
-          fontSize: 14,
+        child: Text(
+          label,
+          style: const TextStyle(color: Colors.black, fontSize: 14),
         ),
       ),
     );
