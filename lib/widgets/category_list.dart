@@ -31,11 +31,11 @@ class CategoryList extends ConsumerWidget {
           ),
         ),
 
-        const SizedBox(height: 10),
+        const SizedBox(height: 12),
 
         // This holds the actual list
         SizedBox(
-          height: 90, // Slightly increased from 80 to breathe
+          height: 60, // reduced so visual spacing matches Cuisine -> Popular
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -84,15 +84,6 @@ class CategoryList extends ConsumerWidget {
               ),
               child: Image.asset(imagePath, fit: BoxFit.contain),
             ),
-            
-            // Optional: If you wanted the text label to appear below the icon, 
-            // uncomment the lines below. (Note: You might need to increase 
-            // the ListView SizedBox height to 100 or 110 if you do this).
-            
-            /*
-            const SizedBox(height: 5),
-            Text(label, style: const TextStyle(fontSize: 12)),
-            */
           ],
         ),
       ),
