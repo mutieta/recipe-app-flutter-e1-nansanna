@@ -9,19 +9,15 @@ class CategoryList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final categories = [
+      {'label': 'Vegan', 'icon': 'assets/images/vegan.png'},
       {'label': 'Chicken', 'icon': 'assets/images/chicken.png'},
-      {'label': 'Fish', 'icon': 'assets/images/fish.png'},
       {'label': 'Pork', 'icon': 'assets/images/pork.png'},
       {'label': 'Beef', 'icon': 'assets/images/beef.png'},
       {'label': 'Seafood', 'icon': 'assets/images/seafood.png'},
-      {'label': 'Vegan', 'icon': 'assets/images/vegan.png'},
     ];
 
-    // FIX: Removed the SizedBox(height: 100) wrapper.
-    // We return the Column directly so it takes the height it needs.
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min, // Ensures it only takes necessary space
       children: [
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 20),
@@ -31,22 +27,21 @@ class CategoryList extends ConsumerWidget {
           ),
         ),
 
-        const SizedBox(height: 12),
+        const SizedBox(height: 10),
 
-        // This holds the actual list
         SizedBox(
-          height: 60, // reduced so visual spacing matches Cuisine -> Popular
+          height: 110, // FIXED: enough space so no bottom overflow
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 20),
             itemCount: categories.length,
             itemBuilder: (context, index) {
               final cat = categories[index];
-              return _cat(
+              return _categoryItem(
                 context,
                 ref,
-                cat['label'] as String,
-                cat['icon'] as String,
+                cat['label']!,
+                cat['icon']!,
               );
             },
           ),
@@ -55,34 +50,44 @@ class CategoryList extends ConsumerWidget {
     );
   }
 
-  Widget _cat(
+  Widget _categoryItem(
     BuildContext context,
     WidgetRef ref,
     String label,
     String imagePath,
   ) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 12),
-      child: GestureDetector(
-        onTap: () {
-          ref.read(selectedCategoryProvider.notifier).state = label;
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (ctx) => const ExploreScreen()),
-          );
-        },
+    return GestureDetector(
+      onTap: () {
+        ref.read(selectedCategoryProvider.notifier).state = label;
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (ctx) => const ExploreScreen()),
+        );
+      },
+      child: Padding(
+        padding: const EdgeInsets.only(right: 15),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              height: 50,
-              width: 50,
-              padding: const EdgeInsets.all(6),
+              height: 60,
+              width: 60,
+              padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.black, // Changed to standard black for visibility
+                color: Colors.black,
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Image.asset(imagePath, fit: BoxFit.contain),
+            ),
+
+            const SizedBox(height: 6),
+
+            Text(
+              label,
+              style: const TextStyle(
+                color: Colors.black,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ],
         ),

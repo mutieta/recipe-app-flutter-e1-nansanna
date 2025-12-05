@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/category_provider.dart';
-// removed category icon helper import to revert to previous state
 import '../providers/meal_provider.dart';
 import '../providers/explore_provider.dart';
 import '../screens/meal_screen.dart';
@@ -69,7 +68,7 @@ class ExploreScreen extends ConsumerWidget {
               ),
             ),
 
-            // Categories Chips
+            // Categories Chips - MODIFIED TO MATCH CUISINE'S APPEARANCE
             categoriesAsync.when(
               data: (categories) => SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
@@ -82,33 +81,41 @@ class ExploreScreen extends ConsumerWidget {
                     final isSelected = selectedCategory == category.name;
                     return Padding(
                       padding: const EdgeInsets.only(right: 8),
-                      child: ChoiceChip(
-                        label: Text(
-                          category.name,
-                          style: TextStyle(
-                            color: isSelected ? Colors.black : Colors.black87,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        selected: isSelected,
-                        selectedColor: Colors.yellow.shade600,
-                        backgroundColor: Colors.grey.shade100,
-                        side: BorderSide(color: Colors.yellow.shade700),
-                        onSelected: (_) {
+                      child: GestureDetector(
+                        onTap: () {
                           ref.read(selectedCategoryProvider.notifier).state =
                               isSelected ? null : category.name;
                         },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? Colors.yellow.shade600
+                                : Colors.grey.shade100,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                                color: Colors.yellow.shade700, width: 1),
+                          ),
+                          child: Text(
+                            category.name,
+                            style: TextStyle(
+                              color: isSelected ? Colors.black : Colors.black87,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
                       ),
                     );
                   }).toList(),
                 ),
               ),
-
               loading: () => const Padding(
                 padding: EdgeInsets.all(16),
                 child: Center(child: CircularProgressIndicator()),
               ),
-
               error: (err, st) => Padding(
                 padding: const EdgeInsets.all(16),
                 child: Text(
@@ -127,7 +134,7 @@ class ExploreScreen extends ConsumerWidget {
               ),
             ),
 
-            // Cuisine Chips
+            // Cuisine Chips (Original ChoiceChip implementation)
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
