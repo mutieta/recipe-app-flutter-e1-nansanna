@@ -39,7 +39,7 @@ class HomeScreen extends ConsumerWidget {
             LiveRecipeCard(),
             SizedBox(height: 20),
             CategoryList(),
-            SizedBox(height: 20),
+            SizedBox(height: 5),
             CuisineCountry(),
             SizedBox(height: 20),
             PopularRecipes(),
