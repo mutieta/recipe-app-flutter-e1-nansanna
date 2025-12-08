@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/favorites_provider.dart';
-// NOTE: Make sure this import points to your Meal Details Screen
 import '../screens/meal_screen.dart'; 
 
 class FavouriteScreen extends ConsumerWidget {
@@ -27,7 +26,6 @@ class FavouriteScreen extends ConsumerWidget {
         // --- DATA STATE ---
         data: (meals) {
           if (meals.isEmpty) {
-            // ... (Empty state UI remains the same) ...
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -62,7 +60,7 @@ class FavouriteScreen extends ConsumerWidget {
             itemBuilder: (context, index) {
               final meal = meals[index];
               
-              // 💅 Use a Card for a prettier, modern look
+              // Use a Card for a modern look
               return Card(
                 elevation: 3,
                 margin: const EdgeInsets.only(bottom: 16),
@@ -72,7 +70,7 @@ class FavouriteScreen extends ConsumerWidget {
                 child: InkWell(
                   borderRadius: BorderRadius.circular(12),
                   
-                  // 🎯 IMPLEMENT NAVIGATION HERE
+                  // IMPLEMENT NAVIGATION HERE
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
@@ -96,7 +94,7 @@ class FavouriteScreen extends ConsumerWidget {
                     padding: const EdgeInsets.all(12.0),
                     child: Row(
                       children: [
-                        // 🖼️ Recipe Image
+                        // Recipe Image
                         ClipRRect(
                           borderRadius: BorderRadius.circular(8),
                           child: Image.network(
@@ -108,7 +106,7 @@ class FavouriteScreen extends ConsumerWidget {
                         ),
                         const SizedBox(width: 12),
                         
-                        // 📝 Title and Area/Category
+                        // Title and Area/Category
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -131,14 +129,14 @@ class FavouriteScreen extends ConsumerWidget {
                                     : meal.category ?? 'Recipe',
                                 style: TextStyle(
                                   fontSize: 13,
-                                  color: Colors.grey.shade600,
+                                  color: Colors.grey.shade300,
                                 ),
                               ),
                             ],
                           ),
                         ),
 
-                        // 🗑️ Remove Favorite Button
+                        //  Remove Favorite Button
                         IconButton(
                           icon: Icon(
                             Icons.favorite,
