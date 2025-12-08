@@ -34,7 +34,7 @@ A mobile recipe application built with Flutter that allows users to explore, sea
 
 - **Framework**: Flutter
 - **Language**: Dart
-- **State Management**: HTTP + StatefulWidget (consider Riverpod for enhanced state management)
+- **State Management**: Riverpod 
 - **Database**: SQLite (sqflite)
 - **HTTP Client**: http package
 - **API**: JSON Server (Meal DB)
