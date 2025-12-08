@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/category_provider.dart';
+import '../providers/explore_provider.dart'; 
 import '../screens/explore_screen.dart';
 
 class CategoryList extends ConsumerWidget {
@@ -8,6 +8,7 @@ class CategoryList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // UI logic (Data defined locally, which is fine for this minimal widget)
     final categories = [
       {'label': 'Vegan', 'icon': 'assets/images/vegan.png'},
       {'label': 'Chicken', 'icon': 'assets/images/chicken.png'},
@@ -30,7 +31,7 @@ class CategoryList extends ConsumerWidget {
         const SizedBox(height: 10),
 
         SizedBox(
-          height: 110, // FIXED: enough space so no bottom overflow
+          height: 110,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -58,7 +59,9 @@ class CategoryList extends ConsumerWidget {
   ) {
     return GestureDetector(
       onTap: () {
+        // This provider is now correctly available via the new import:
         ref.read(selectedCategoryProvider.notifier).state = label;
+        
         Navigator.push(
           context,
           MaterialPageRoute(builder: (ctx) => const ExploreScreen()),

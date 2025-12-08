@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/category_provider.dart';
 import '../providers/meal_provider.dart';
-import '../providers/explore_provider.dart';
-import '../screens/meal_screen.dart';
+import '../providers/explore_provider.dart'; // Contains static categoryItemsProvider
+import '../screens/meal_screen.dart'; // Correct detail screen
 
 class ExploreScreen extends ConsumerWidget {
   const ExploreScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final categoriesAsync = ref.watch(categoriesProvider);
+    // 1. Fetching STATIC data for categories
+    final categories = ref.watch(categoryItemsProvider); 
     final selectedCategory = ref.watch(selectedCategoryProvider);
+    
     final mealsAsync = ref.watch(mealsProvider);
     final selectedCuisine = ref.watch(selectedCuisineProvider);
     final searchQuery = ref.watch(searchQueryProvider);
@@ -34,7 +35,7 @@ class ExploreScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Search Bar
+            // Search Bar (Unchanged)
             Padding(
               padding: const EdgeInsets.all(16),
               child: TextField(
@@ -43,7 +44,7 @@ class ExploreScreen extends ConsumerWidget {
                 style: const TextStyle(color: Colors.black),
                 decoration: InputDecoration(
                   hintText: 'Search recipes...',
-                  hintStyle: TextStyle(color: Colors.black54),
+                  hintStyle: const TextStyle(color: Colors.black54),
                   prefixIcon: const Icon(Icons.search, color: Colors.black54),
                   filled: true,
                   fillColor: Colors.grey.shade100,
@@ -55,8 +56,67 @@ class ExploreScreen extends ConsumerWidget {
               ),
             ),
 
+            // Categories Title
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
+                'Categories',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.black,
+                ),
+              ),
+            ),
 
-            // Cuisine Title
+            // 2. Categories Chips (NOW SYNCHRONOUS AND INSTANT)
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 8,
+              ),
+              child: Row(
+                // Use the static list directly
+                children: categories.map((categoryName) { 
+                  final isSelected = selectedCategory == categoryName;
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: GestureDetector(
+                      onTap: () {
+                        ref.read(selectedCategoryProvider.notifier).state =
+                            isSelected ? null : categoryName;
+                        // Mutual Exclusion
+                        ref.read(selectedCuisineProvider.notifier).state = null;
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? Colors.yellow.shade600
+                              : Colors.grey.shade100,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                              color: Colors.yellow.shade700, width: 1),
+                        ),
+                        child: Text(
+                          categoryName,
+                          style: TextStyle(
+                            color: isSelected ? Colors.black : Colors.black87,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+
+            // Cuisine Title (Unchanged)
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: Text(
@@ -65,7 +125,7 @@ class ExploreScreen extends ConsumerWidget {
               ),
             ),
 
-            // Cuisine Chips (Original ChoiceChip implementation)
+            // Cuisine Chips (Unchanged, retaining mutual exclusion)
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -89,6 +149,8 @@ class ExploreScreen extends ConsumerWidget {
                       onSelected: (_) {
                         ref.read(selectedCuisineProvider.notifier).state =
                             isSelected ? null : cuisine;
+                        // Mutual Exclusion
+                        ref.read(selectedCategoryProvider.notifier).state = null;
                       },
                     ),
                   );
@@ -96,13 +158,13 @@ class ExploreScreen extends ConsumerWidget {
               ),
             ),
 
-            // RESULTS LIST
+            // RESULTS LIST (Filters are correctly set up)
             Expanded(
               child: mealsAsync.when(
                 data: (meals) {
                   var filtered = meals;
 
-                  // Filters
+                  // 1. Search Query Filter
                   if (searchQuery.isNotEmpty) {
                     final q = searchQuery.toLowerCase();
                     filtered = filtered
@@ -110,29 +172,26 @@ class ExploreScreen extends ConsumerWidget {
                         .toList();
                   }
 
+                  // 2. Category Filter (Exact match on m.category)
                   if (selectedCategory != null) {
                     final q = selectedCategory.toLowerCase();
                     filtered = filtered
-                        .where((m) => m.title.toLowerCase().contains(q))
+                        .where((m) => (m.category ?? '').toLowerCase() == q)
                         .toList();
                   }
 
+                  // 3. Cuisine Filter (Exact match on m.area)
                   if (selectedCuisine != null) {
                     final q = selectedCuisine.toLowerCase();
                     filtered = filtered.where((m) {
-                      final title = m.title.toLowerCase();
-                      final area = (m.area ?? '').toLowerCase();
-                      final category = (m.category ?? '').toLowerCase();
-                      return title.contains(q) ||
-                          area.contains(q) ||
-                          category.contains(q);
+                      return (m.area ?? '').toLowerCase() == q;
                     }).toList();
                   }
 
                   if (filtered.isEmpty) {
                     return const Center(
                       child: Text(
-                        'No meals found',
+                        'No meals found matching your criteria.',
                         style: TextStyle(color: Colors.black54),
                       ),
                     );
@@ -189,6 +248,7 @@ class ExploreScreen extends ConsumerWidget {
                                   area: meal.area,
                                   category: meal.category,
                                   tiktokUrl: meal.tiktokUrl,
+                                  linkVideoUrl: meal.linkVideoUrl,
                                 ),
                               ),
                             );
