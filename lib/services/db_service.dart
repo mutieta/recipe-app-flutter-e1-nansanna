@@ -10,6 +10,8 @@ class DbService {
 
   Future<Database> get database async {
     if (_database != null) return _database!;
+    // Note: Use `path_provider` to ensure the directory exists in a real app,
+    // but `sqflite` often handles this implicitly.
     _database = await _initDB("meals.db");
     return _database!;
   }
@@ -20,19 +22,25 @@ class DbService {
 
     return await openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: _createDB,
     );
   }
 
   Future _createDB(Database db, int version) async {
+    // FIX: Added all missing columns (linkVideoUrl, source, area, category, tiktokUrl)
     await db.execute('''
       CREATE TABLE favorites (
         id TEXT PRIMARY KEY,
         title TEXT,
         imageUrl TEXT,
         instructions TEXT,
-        ingredients TEXT
+        ingredients TEXT,
+        linkVideoUrl TEXT,
+        source TEXT,
+        area TEXT,
+        category TEXT,
+        tiktokUrl TEXT
       )
     ''');
   }
@@ -62,6 +70,7 @@ class DbService {
     final db = await instance.database;
     final result = await db.query("favorites");
 
+    // Fix: Ensure we handle the Meal.fromMap conversion correctly
     return result.map((map) => Meal.fromMap(map)).toList();
   }
 

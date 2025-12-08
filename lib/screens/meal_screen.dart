@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart'; // 💡 NEW: Import Riverpod
 import 'package:url_launcher/url_launcher.dart';
 import '../widgets/recipe_header.dart';
-import '../services/db_service.dart';
+// import '../services/db_service.dart'; // 🗑️ REMOVED: No longer needed directly
 import '../models/meal.dart';
+import '../providers/favorites_provider.dart'; // 💡 NEW: Import Favorites Provider
 
-class MealDetailsScreen extends StatefulWidget {
+// 1. Change to ConsumerStatefulWidget
+class MealDetailsScreen extends ConsumerStatefulWidget {
   final String id;
   final String title;
   final String imageUrl;
@@ -31,73 +34,74 @@ class MealDetailsScreen extends StatefulWidget {
   });
 
   @override
-  State<MealDetailsScreen> createState() => _MealDetailsScreenState();
+  // 2. Change to ConsumerState
+  ConsumerState<MealDetailsScreen> createState() => _MealDetailsScreenState();
 }
 
-class _MealDetailsScreenState extends State<MealDetailsScreen> {
-  final DbService dbService = DbService.instance;
+// 3. Change to ConsumerState
+class _MealDetailsScreenState extends ConsumerState<MealDetailsScreen> {
+  // 🗑️ REMOVED: final DbService dbService = DbService.instance;
   bool isFavorite = false;
 
   @override
   void initState() {
     super.initState();
+    // Start checking favorite status right away
     _checkFavorite();
   }
 
+  // 🔄 Modified to use the Riverpod provider check method
   Future<void> _checkFavorite() async {
-    final fav = await dbService.isFavorite(widget.id);
+    // We use the `isFavorite` method on the Notifier, which uses the DB check.
+    final fav = await ref.read(favoritesProvider.notifier).isFavorite(widget.id);
     setState(() => isFavorite = fav);
   }
 
+  // 🚀 Modified to use the Riverpod Notifier for instant state update
   Future<void> _toggleFavorite() async {
-    setState(() => isFavorite = !isFavorite);
+    // 1. Create a full Meal object from the widget's properties
     final meal = Meal(
       id: widget.id,
       title: widget.title,
       imageUrl: widget.imageUrl,
       instructions: widget.instructions,
       ingredients: widget.ingredients,
+      // 💡 Ensure all optional fields are included for DB insertion
+      linkVideoUrl: widget.linkVideoUrl,
       source: widget.source,
       area: widget.area,
       category: widget.category,
       tiktokUrl: widget.tiktokUrl,
     );
 
+    // 2. Access the Riverpod Notifier for state management
+    final notifier = ref.read(favoritesProvider.notifier);
+    
+    // 3. Toggle favorite status and update the provider
     if (isFavorite) {
-      await dbService.insertMeal(meal);
+      // Meal is currently a favorite, so remove it
+      await notifier.removeFavorite(widget.id); 
+      setState(() => isFavorite = false); // Update local state for the heart icon
     } else {
-      await dbService.deleteMeal(widget.id);
+      // Meal is NOT a favorite, so add it
+      await notifier.addFavorite(meal);
+      setState(() => isFavorite = true); // Update local state for the heart icon
     }
+    
+    // The FavoritesNotifier will handle updating its state instantly
+    // and saving the change to the database in the background.
   }
 
-  // --- NEW: Smarter Parsing Logic ---
-  // This helper function handles different dash types and ensures
-  // we only split on the FIRST separator, keeping the rest as the amount.
+  // --- NEW: Smarter Parsing Logic (Remains unchanged) ---
   Map<String, String> _parseIngredient(String line) {
-    // Defines a regex that matches:
-    // : (colon)
-    // - (hyphen)
-    // – (en dash)
-    // — (em dash)
-    // − (minus sign)
-    // and looks for them potentially surrounded by spaces.
     final regex = RegExp(r'[:\-\u2013\u2014\u2212]');
-    
-    // Find the first match of any separator
     final match = regex.firstMatch(line);
 
     if (match != null) {
-      // Split the string at the index of the first separator
       final name = line.substring(0, match.start).trim();
-      
-      // Everything after the separator is the amount
-      // (match.end skips the separator character itself)
       final amount = line.substring(match.end).trim();
-      
       return {'name': name, 'amount': amount};
     }
-    
-    // Fallback: If no separator found, return whole line as name
     return {'name': line, 'amount': ''};
   }
 
@@ -110,10 +114,11 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
             title: widget.title,
             isFavorite: isFavorite,
             onBack: () => Navigator.pop(context),
-            onFavorite: _toggleFavorite,
+            onFavorite: _toggleFavorite, // This now triggers the Riverpod update!
           ),
           Expanded(
             child: SingleChildScrollView(
+              // ... (Rest of the UI build method remains UNCHANGED) ...
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
