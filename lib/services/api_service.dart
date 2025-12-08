@@ -6,7 +6,7 @@ import '../models/category.dart';
 class ApiService {
   static const String baseUrl = "https://meal-db-sandy.vercel.app";
 
-  // 🔑 Your unique student GUID
+  // Your unique student GUID
   static const String dbHeader = "5186bf20-80a6-4beb-9544-99620186993b";
 
   static Map<String, String> get headers => {

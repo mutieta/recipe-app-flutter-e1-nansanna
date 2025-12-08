@@ -59,9 +59,9 @@ class CuisineCountry extends ConsumerWidget {
         margin: const EdgeInsets.only(right: 10),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
-          color: Colors.yellow.shade600, // background
+          color: Colors.yellow.shade600,
           border: Border.all(
-            color: Colors.yellow.shade700, // orange border
+            color: Colors.yellow.shade700, 
             width: 2,
           ),
           borderRadius: BorderRadius.circular(20),

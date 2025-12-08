@@ -13,9 +13,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
-  // 1. CHECK YOUR IMAGE PATHS HERE
-  // Ensure these match exactly where you put the files in your project folder
-  // Only images needed for onboarding pages
+  // 1. YOUR IMAGE PATHS HERE
   final List<String> _onboardingImages = [
     'assets/images/onboarding1.png',
     'assets/images/onboarding2.png',
@@ -25,15 +23,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   void initState() {
     super.initState();
-    // Diagnostic: print the AssetManifest at startup so we can see which assets
-    // were bundled into the app. This helps verify whether the images were
-    // included and what their keys are.
-    rootBundle
+       rootBundle
         .loadString('AssetManifest.json')
         .then((manifest) {
           debugPrint('--- AssetManifest.json ---');
-          // Print only entries related to onboarding to avoid noisy output
-          final lines = manifest.split('\n');
+           final lines = manifest.split('\n');
           for (final line in lines) {
             if (line.contains('onboarding')) debugPrint(line);
           }

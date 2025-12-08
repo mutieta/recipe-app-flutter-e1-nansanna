@@ -8,7 +8,6 @@ class CategoryList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // UI logic (Data defined locally, which is fine for this minimal widget)
     final categories = [
       {'label': 'Vegan', 'icon': 'assets/images/vegan.png'},
       {'label': 'Chicken', 'icon': 'assets/images/chicken.png'},
@@ -59,7 +58,6 @@ class CategoryList extends ConsumerWidget {
   ) {
     return GestureDetector(
       onTap: () {
-        // This provider is now correctly available via the new import:
         ref.read(selectedCategoryProvider.notifier).state = label;
         
         Navigator.push(

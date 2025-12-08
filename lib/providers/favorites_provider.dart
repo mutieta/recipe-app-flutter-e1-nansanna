@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/meal.dart';
 import '../services/db_service.dart';
 
-// 📌 StateNotifier for managing favorite meals
+// StateNotifier for managing favorite meals
 class FavoritesNotifier extends StateNotifier<AsyncValue<List<Meal>>> {
   FavoritesNotifier() : super(const AsyncValue.loading()) {
     _loadFavorites();
@@ -18,7 +18,7 @@ class FavoritesNotifier extends StateNotifier<AsyncValue<List<Meal>>> {
     }
   }
 
-  // 🚀 OPTIMIZED: Update in-memory state FIRST, then update DB.
+  // OPTIMIZED: Update in-memory state FIRST, then update DB.
   Future<void> addFavorite(Meal meal) async {
     if (state.hasValue) {
       // 1. Optimistic Update: Add to the current list
@@ -36,7 +36,7 @@ class FavoritesNotifier extends StateNotifier<AsyncValue<List<Meal>>> {
     }
   }
 
-  // 🚀 OPTIMIZED: Update in-memory state FIRST, then update DB.
+  // OPTIMIZED: Update in-memory state FIRST, then update DB.
   Future<void> removeFavorite(String mealId) async {
     if (state.hasValue) {
       // 1. Optimistic Update: Filter out the meal from the current list
@@ -60,14 +60,13 @@ class FavoritesNotifier extends StateNotifier<AsyncValue<List<Meal>>> {
   }
 }
 
-// 💾 Provider for managing favorites
+// Provider for managing favorites
 final favoritesProvider =
     StateNotifierProvider<FavoritesNotifier, AsyncValue<List<Meal>>>((ref) {
       return FavoritesNotifier();
     });
 
-// 🔍 Provider to check if a specific meal is favorited
-// NOTE: This is the correct Riverpod way to check the status based on the main list.
+// Provider to check if a specific meal is favorited
 final isMealFavoriteProvider = FutureProvider.family<bool, String>((
   ref,
   mealId,

@@ -28,8 +28,7 @@ class DbService {
   }
 
   Future _createDB(Database db, int version) async {
-    // FIX: Added all missing columns (linkVideoUrl, source, area, category, tiktokUrl)
-    await db.execute('''
+     await db.execute('''
       CREATE TABLE favorites (
         id TEXT PRIMARY KEY,
         title TEXT,
@@ -70,7 +69,7 @@ class DbService {
     final db = await instance.database;
     final result = await db.query("favorites");
 
-    // Fix: Ensure we handle the Meal.fromMap conversion correctly
+    // Ensure we handle the Meal.fromMap conversion correctly
     return result.map((map) => Meal.fromMap(map)).toList();
   }
 

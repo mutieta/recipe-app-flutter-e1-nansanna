@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart'; // 💡 NEW: Import Riverpod
+import 'package:flutter_riverpod/flutter_riverpod.dart'; 
 import 'package:url_launcher/url_launcher.dart';
 import '../widgets/recipe_header.dart';
-// import '../services/db_service.dart'; // 🗑️ REMOVED: No longer needed directly
 import '../models/meal.dart';
-import '../providers/favorites_provider.dart'; // 💡 NEW: Import Favorites Provider
+import '../providers/favorites_provider.dart';
+
+
 
 // 1. Change to ConsumerStatefulWidget
 class MealDetailsScreen extends ConsumerStatefulWidget {
@@ -40,7 +41,6 @@ class MealDetailsScreen extends ConsumerStatefulWidget {
 
 // 3. Change to ConsumerState
 class _MealDetailsScreenState extends ConsumerState<MealDetailsScreen> {
-  // 🗑️ REMOVED: final DbService dbService = DbService.instance;
   bool isFavorite = false;
 
   @override
@@ -50,14 +50,14 @@ class _MealDetailsScreenState extends ConsumerState<MealDetailsScreen> {
     _checkFavorite();
   }
 
-  // 🔄 Modified to use the Riverpod provider check method
+  // Check favorite status using Riverpod Notifier
   Future<void> _checkFavorite() async {
     // We use the `isFavorite` method on the Notifier, which uses the DB check.
     final fav = await ref.read(favoritesProvider.notifier).isFavorite(widget.id);
     setState(() => isFavorite = fav);
   }
 
-  // 🚀 Modified to use the Riverpod Notifier for instant state update
+  // Modified to use the Riverpod Notifier for instant state update
   Future<void> _toggleFavorite() async {
     // 1. Create a full Meal object from the widget's properties
     final meal = Meal(
@@ -66,7 +66,7 @@ class _MealDetailsScreenState extends ConsumerState<MealDetailsScreen> {
       imageUrl: widget.imageUrl,
       instructions: widget.instructions,
       ingredients: widget.ingredients,
-      // 💡 Ensure all optional fields are included for DB insertion
+      // Ensure all optional fields are included for DB insertion
       linkVideoUrl: widget.linkVideoUrl,
       source: widget.source,
       area: widget.area,
@@ -92,7 +92,7 @@ class _MealDetailsScreenState extends ConsumerState<MealDetailsScreen> {
     // and saving the change to the database in the background.
   }
 
-  // --- NEW: Smarter Parsing Logic (Remains unchanged) ---
+  // Smarter Parsing Logic (Remains unchanged) 
   Map<String, String> _parseIngredient(String line) {
     final regex = RegExp(r'[:\-\u2013\u2014\u2212]');
     final match = regex.firstMatch(line);
@@ -114,11 +114,10 @@ class _MealDetailsScreenState extends ConsumerState<MealDetailsScreen> {
             title: widget.title,
             isFavorite: isFavorite,
             onBack: () => Navigator.pop(context),
-            onFavorite: _toggleFavorite, // This now triggers the Riverpod update!
+            onFavorite: _toggleFavorite,
           ),
           Expanded(
             child: SingleChildScrollView(
-              // ... (Rest of the UI build method remains UNCHANGED) ...
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

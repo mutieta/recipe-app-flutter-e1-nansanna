@@ -52,7 +52,7 @@ class LiveRecipeCard extends ConsumerWidget {
               ),
               child: Stack(
                 children: [
-                  // 🔄 Reload button (top-right) - triggers provider refresh
+                  // Reload button (top-right) - triggers provider refresh
                   Positioned(
                     top: 12,
                     right: 12,

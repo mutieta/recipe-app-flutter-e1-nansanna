@@ -1,12 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-// 🍽️ Provider for selected cuisine/area
+// Provider for selected cuisine/area
 final selectedCuisineProvider = StateProvider<String?>((ref) => null);
 
-// 🍽️ Renamed for consistency and clarity:
+// Renamed for consistency and clarity:
 final selectedCategoryProvider = StateProvider<String?>((ref) => null); 
 
-// 🍽️ Provider for search query
+// Provider for search query
 final searchQueryProvider = StateProvider<String>((ref) => "");
 
 // List of available cuisines (Static and Instantly Available)
