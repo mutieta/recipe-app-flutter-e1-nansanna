@@ -33,7 +33,7 @@ class FavouriteScreen extends ConsumerWidget {
                   Icon(
                     Icons.favorite_border,
                     size: 80,
-                    color: Colors.grey.shade400,
+                    color: Colors.grey.shade100,
                   ),
                   const SizedBox(height: 16),
                   const Text(
@@ -99,14 +99,14 @@ class FavouriteScreen extends ConsumerWidget {
                           borderRadius: BorderRadius.circular(8),
                           child: Image.network(
                             meal.imageUrl,
-                            width: 80, // Increased size
-                            height: 80, // Increased size
+                            width: 80, 
+                            height: 80, 
                             fit: BoxFit.cover,
                           ),
                         ),
                         const SizedBox(width: 12),
                         
-                        // Title and Area/Category
+                        // Title 
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -122,16 +122,6 @@ class FavouriteScreen extends ConsumerWidget {
                                 overflow: TextOverflow.ellipsis,
                               ),
                               const SizedBox(height: 4),
-                              // Note: Re-adding Area/Category display here for context
-                              Text(
-                                meal.area != null && meal.area!.isNotEmpty
-                                    ? meal.area!
-                                    : meal.category ?? 'Recipe',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: Colors.grey.shade300,
-                                ),
-                              ),
                             ],
                           ),
                         ),
