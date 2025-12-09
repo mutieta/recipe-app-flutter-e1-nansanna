@@ -2,6 +2,8 @@
 
 A mobile recipe application built with Flutter that allows users to explore, search, and save their favorite recipes. 
 
+<video src="https://github.com/user-attachments/assets/6e8f95cc-4a28-459d-8cf7-c958aa19f5c2" controls width="600"></video>
+
 ## ✨ Features
 
 - **Onboarding Screen**: Welcome screen for new users
